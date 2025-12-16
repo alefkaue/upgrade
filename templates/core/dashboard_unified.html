@@ -1,0 +1,20 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Dashboard - UPGRADE{% endblock %}
+{% block page_title %}{% if active_tab == 'overview' %}Visao Geral{% elif active_tab == 'projects' %}Meus Projetos{% elif active_tab == 'profile' %}Meu Perfil{% elif active_tab == 'sales' %}Painel de Vendas{% elif active_tab == 'link_generator' %}Gerador de Links{% else %}Dashboard{% endif %}{% endblock %}
+
+{% block content %}
+{% if active_tab == 'overview' %}
+    {% include 'core/partials/overview.html' %}
+{% elif active_tab == 'projects' or active_tab == 'my_projects' %}
+    {% include 'core/partials/my_projects.html' %}
+{% elif active_tab == 'profile' %}
+    {% include 'core/partials/profile.html' %}
+{% elif active_tab == 'sales' %}
+    {% include 'core/partials/sales_panel.html' %}
+{% elif active_tab == 'link_generator' %}
+    {% include 'core/partials/link_generator.html' %}
+{% else %}
+    {% include 'core/partials/overview.html' %}
+{% endif %}
+{% endblock %}

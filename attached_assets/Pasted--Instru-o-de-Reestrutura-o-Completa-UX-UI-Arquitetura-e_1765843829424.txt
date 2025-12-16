@@ -1,0 +1,52 @@
+# Instrução de Reestruturação Completa: UX/UI, Arquitetura e Inteligência Financeira
+
+**Arquivo Fonte:** Segue o `.zip` do projeto UPGRADE.
+
+### 1. Visão Macro: A Unificação da Interface
+Atualmente, as telas de Admin, Afiliado e User são muito diferentes. Quero unificar a experiência.
+**A Regra:** Todos os usuários (seja Admin, Afiliado ou Comum) devem navegar por uma **Sidebar Lateral Esquerda** (estilo Dashboard SaaS).
+* **Base Comum:** Todo mundo tem a aba "Meus Projetos" e "Meu Perfil".
+* **Permissões:**
+    * **Admin:** Vê abas extras na sidebar: "Gestão Global", "Usuários", "Auditoria", "Links Mestres".
+    * **Afiliado:** Vê abas extras: "Painel de Vendas", "Gerador de Links".
+    * **User:** Vê apenas as abas pessoais.
+
+### 2. Melhorias Específicas por Página
+
+#### A. Tela de Login (`login.html`)
+* **Limpeza Visual:** Remova os placeholders com exemplos confusos (ex: "PRT-XXX"). Deixe os campos limpos ("Digite seu usuário", "Digite sua senha").
+* **Foco:** Mantenha o design minimalista e centralizado.
+
+#### B. Painel Admin (Gestão + Uso Pessoal)
+O Admin não é apenas um auditor, ele também usa o sistema.
+1.  **Hierarquia:** O Dashboard deve mostrar primeiro os **KPIs do Negócio** (Valor total gerado, Novos usuários), mas deve ter acesso rápido aos "Meus Projetos Pessoais" (o Admin também monta setups).
+2.  **Super Poderes (Ghost Mode):** Implemente uma View que permita ao Admin listar projetos de *outros usuários* e clicar em "Editar". Isso serve para suporte: se um usuário travar, o Admin entra e corrige.
+3.  **Controle de Links:** Uma tabela onde o Admin vê/edita os links de afiliados globais. Se um link da Amazon quebrar, o Admin arruma um só lugar e corrige para todos.
+
+#### C. Painel de Afiliado
+1.  **Ferramentas:** Adicione uma aba "Gerador de Links". O afiliado cola um link normal, o sistema insere a Tag dele automaticamente.
+2.  **Híbrido:** O Afiliado também deve ter a aba "Meus Projetos" para usar o sistema como cliente.
+
+### 3. O "Cérebro" do Sistema: Recomendação e Inteligência Financeira
+Esta é a parte mais crítica. Implemente no Backend (`services.py` e `views.py`) a lógica de recomendação baseada em **Fluxo de Caixa**.
+
+#### Funcionalidade "For You" (Recomendação Contextual)
+Crie uma lógica que leia o nome do projeto do usuário (ex: "PC Gamer") e use a API `Groq` para sugerir itens faltantes automaticamente.
+
+#### Algoritmo "Smart Choice" (Renda vs. Preço)
+O sistema deve parar de recomendar apenas "o mais barato à vista". Implemente a seguinte lógica Python:
+* **Input:** Renda Mensal do Usuário (`User.income`) e Preço do Produto.
+* **Lógica de Decisão:**
+    * Calcule a "Capacidade de Parcela" (ex: 30% da renda).
+    * **Cenário 1:** Se o usuário tem o valor total disponível -> Recomende o menor preço à vista (Pix).
+    * **Cenário 2:** Se o valor à vista compromete a renda, busque ofertas em outras lojas que aceitem parcelamento longo (12x, 18x, 21x), desde que a parcela caiba na "Capacidade Mensal".
+* **Output:** Exiba no card do produto: *"Recomendado para você: Loja Kabum (18x de R$ 150) - Cabe no seu bolso, diferente da Amazon que exige à vista."*
+
+### 4. Recomendações Técnicas para Implementação
+Para realizar isso, utilize:
+* **Django Template Inheritance:** Crie um `base_dashboard.html` com a Sidebar dinâmica que muda os itens baseado em `{% if user.is_staff %}`.
+* **HTMX:** Use HTMX para carregar a seção "For You" e as recomendações de preço de forma assíncrona, para não travar o carregamento do dashboard.
+* **Context Processors:** Crie um processador de contexto para injetar as variáveis de notificação e renda em todas as templates.
+
+**Entregável:**
+Quero o código refatorado das Views, os novos templates HTML (Login limpo + Dashboards com Sidebar unificada) e o arquivo de serviço (`finance_engine.py`) com a lógica matemática de comparação de crédito.

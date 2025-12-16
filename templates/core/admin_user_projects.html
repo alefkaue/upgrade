@@ -1,0 +1,89 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Projetos de {{ target_user.username }} - Admin{% endblock %}
+{% block page_title %}Projetos de {{ target_user.username }}{% endblock %}
+{% block page_subtitle %}Ghost Mode - Visualizando projetos de outro usuario{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <div>
+                <p class="font-medium text-yellow-800">Ghost Mode Ativo</p>
+                <p class="text-sm text-yellow-700">Voce esta visualizando os projetos de <strong>{{ target_user.username }}</strong> ({{ target_user.email|default:"sem email" }})</p>
+            </div>
+        </div>
+        <a href="{% url 'admin_users' %}" class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-md hover:bg-yellow-200 text-sm">
+            Voltar para Usuarios
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <p class="text-sm text-gray-500">Projetos</p>
+            <p class="text-2xl font-bold">{{ projects.count }}</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <p class="text-sm text-gray-500">Renda Mensal</p>
+            <p class="text-2xl font-bold text-green-600">R$ {{ target_user.monthly_income|floatformat:0 }}</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <p class="text-sm text-gray-500">Tipo de Conta</p>
+            <p class="text-2xl font-bold">{{ target_user.get_role_display }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg">
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="font-semibold">Projetos do Usuario</h2>
+        </div>
+        
+        {% if projects %}
+        <div class="divide-y divide-gray-100">
+            {% for project in projects %}
+            <div class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-medium">{{ project.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ project.get_project_type_display }} - {{ project.items.count }} itens</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Total: <strong>R$ {{ project.total_cash_price|floatformat:2 }}</strong></p>
+                        <p class="text-sm text-gray-500">Parcela: <strong>R$ {{ project.total_monthly_installment|floatformat:2 }}/mes</strong></p>
+                    </div>
+                </div>
+                
+                {% if project.items.exists %}
+                <div class="mt-3 pt-3 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 mb-2">Itens:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for item in project.items.all|slice:":5" %}
+                        <span class="text-xs px-2 py-1 bg-gray-100 rounded">{{ item.name|truncatechars:20 }}</span>
+                        {% endfor %}
+                        {% if project.items.count > 5 %}
+                        <span class="text-xs px-2 py-1 bg-gray-100 rounded">+{{ project.items.count|add:"-5" }} mais</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-3 flex space-x-2">
+                    <a href="{% url 'project_detail' project.pk %}" class="text-sm text-blue-600 hover:underline">Ver Detalhes</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{% url 'project_edit' project.pk %}" class="text-sm text-blue-600 hover:underline">Editar (Suporte)</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-gray-500">
+            <p>Este usuario ainda nao tem projetos.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

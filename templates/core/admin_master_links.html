@@ -1,0 +1,73 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Links Mestres - Admin{% endblock %}
+{% block page_title %}Links Mestres Globais{% endblock %}
+{% block page_subtitle %}Configure os links de afiliado padrao para todo o sistema{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-lg font-bold mb-4">Tags de Afiliado Globais</h2>
+        <p class="text-sm text-gray-500 mb-6">Estes links serao usados como fallback quando um parceiro nao tiver sua propria tag configurada.</p>
+        
+        <form method="post" action="{% url 'admin_update_master_links' %}">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Amazon Tag</label>
+                    <input type="text" name="amazon_tag" value="{{ admin_settings.amazon_tag }}"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                    <p class="text-xs text-gray-500 mt-1">Tag padrao para links da Amazon</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kabum ID</label>
+                    <input type="text" name="kabum_id" value="{{ admin_settings.kabum_id }}"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                    <p class="text-xs text-gray-500 mt-1">ID padrao para links da Kabum</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Terabyte Code</label>
+                    <input type="text" name="terabyte_code" value="{{ admin_settings.terabyte_code }}"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                    <p class="text-xs text-gray-500 mt-1">Codigo padrao para links da Terabyte</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">AliExpress ID</label>
+                    <input type="text" name="aliexpress_id" value="{{ admin_settings.aliexpress_id }}"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                    <p class="text-xs text-gray-500 mt-1">ID padrao para links do AliExpress</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pichau ID</label>
+                    <input type="text" name="pichau_id" value="{{ admin_settings.pichau_id }}"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                    <p class="text-xs text-gray-500 mt-1">ID padrao para links da Pichau</p>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button type="submit" class="px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+                    Salvar Alteracoes
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <h3 class="font-semibold text-yellow-800 mb-2 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Como Funciona
+        </h3>
+        <p class="text-sm text-yellow-700">
+            Quando um usuario visualiza um produto, o sistema verifica:
+        </p>
+        <ol class="list-decimal list-inside text-sm text-yellow-700 mt-2 space-y-1">
+            <li>Se o usuario chegou pelo link de um <strong>Parceiro</strong>, usa a tag do parceiro</li>
+            <li>Se nao houver parceiro, usa as <strong>Tags Mestres</strong> configuradas aqui</li>
+            <li>Todas as comissoes vao para a conta configurada nestas tags</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}

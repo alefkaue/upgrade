@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPGRADE - Pare de pagar mais do que deveria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+</head>
+<body class="min-h-screen bg-white">
+    <header class="border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 flex h-16 items-center justify-between">
+            <a href="/" class="text-xl font-bold text-black">UPGRADE</a>
+            <div class="flex items-center gap-4">
+                <a href="#como-funciona" class="text-sm text-gray-500 hover:text-black transition-colors">
+                    Como Funciona
+                </a>
+                <a href="{% url 'login' %}" class="inline-flex items-center px-4 py-2 border border-gray-200 rounded-md text-sm hover:bg-gray-50 transition-colors">
+                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                    Entrar
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6">
+        <section class="py-20 md:py-32 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-green-50 text-sm mb-8">
+                <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                </svg>
+                <span>Powered by AI - Sniper Financeiro</span>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                Pare de pagar<br>
+                <span class="text-gray-400">mais do que deveria</span>
+            </h1>
+
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto mb-10">
+                O <strong class="text-black">UPGRADE</strong> usa IA para comparar precos em tempo real, analisar
+                condicoes de pagamento e recomendar a melhor estrategia para seu bolso.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{% url 'register' %}" class="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-gray-800 transition-colors min-w-[180px]">
+                    Comecar Gratis
+                    <svg class="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+                <a href="#como-funciona" class="inline-flex items-center justify-center px-6 py-3 border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors">
+                    Como Funciona
+                </a>
+            </div>
+        </section>
+
+        <section id="como-funciona" class="py-16 border-t border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">7+ Lojas Comparadas</h3>
+                    <p class="text-sm text-gray-500">
+                        Amazon, Kabum, Pichau, Terabyte e mais.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
+                        <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">IA Financeira</h3>
+                    <p class="text-sm text-gray-500">
+                        Analise inteligente de parcelamento vs a vista.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Links Verificados</h3>
+                    <p class="text-sm text-gray-500">
+                        Todos os links sao verificados e seguros.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-200 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center text-sm text-gray-500">
+            2024 UPGRADE. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    {% include "partials/chat_widget.html" %}
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!-- Financial Sniper Chat Widget - Isolated FAB Button -->
+<style>
+.fs-chat-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.fs-chat-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.4);
+}
+.fs-chat-fab svg {
+    width: 28px;
+    height: 28px;
+    fill: #00d4aa;
+}
+.fs-chat-fab.active svg {
+    display: none;
+}
+.fs-chat-fab.active::after {
+    content: '×';
+    font-size: 32px;
+    color: #00d4aa;
+    line-height: 1;
+}
+
+.fs-chat-overlay {
+    position: fixed;
+    bottom: 100px;
+    right: 24px;
+    width: 380px;
+    max-width: calc(100vw - 48px);
+    height: 520px;
+    max-height: calc(100vh - 140px);
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 9998;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.fs-chat-overlay.open {
+    display: flex;
+    animation: fs-slide-up 0.3s ease;
+}
+@keyframes fs-slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fs-chat-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.fs-chat-header-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(0,212,170,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fs-chat-header-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: #00d4aa;
+}
+.fs-chat-header-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+.fs-chat-header-info p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    opacity: 0.8;
+}
+.fs-chat-header-dollar {
+    margin-left: auto;
+    background: rgba(0,212,170,0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #00d4aa;
+    font-weight: 500;
+}
+
+.fs-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f8f9fa;
+}
+.fs-chat-message {
+    margin-bottom: 12px;
+    max-width: 85%;
+    animation: fs-fade-in 0.2s ease;
+}
+@keyframes fs-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.fs-chat-message.user {
+    margin-left: auto;
+}
+.fs-chat-message-bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+.fs-chat-message.bot .fs-chat-message-bubble {
+    background: #fff;
+    color: #333;
+    border: 1px solid #e9ecef;
+    border-bottom-left-radius: 4px;
+}
+.fs-chat-message.user .fs-chat-message-bubble {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.fs-chat-message-bubble strong {
+    color: #00d4aa;
+}
+.fs-chat-message-bubble code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.fs-chat-typing {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e9ecef;
+    width: fit-content;
+}
+.fs-chat-typing span {
+    width: 8px;
+    height: 8px;
+    background: #adb5bd;
+    border-radius: 50%;
+    animation: fs-typing 1s infinite;
+}
+.fs-chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+.fs-chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes fs-typing {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+.fs-chat-input-area {
+    padding: 16px;
+    background: #fff;
+    border-top: 1px solid #e9ecef;
+}
+.fs-chat-input-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.fs-chat-input {
+    flex: 1;
+    border: 1px solid #e9ecef;
+    border-radius: 24px;
+    padding: 12px 18px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.fs-chat-input:focus {
+    border-color: #00d4aa;
+}
+.fs-chat-send {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.fs-chat-send:hover {
+    transform: scale(1.05);
+}
+.fs-chat-send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.fs-chat-send svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+}
+
+.fs-chat-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+.fs-chat-quick-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.fs-chat-quick-btn:hover {
+    background: #f1f3f5;
+    border-color: #00d4aa;
+}
+
+@media (max-width: 480px) {
+    .fs-chat-overlay {
+        width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 90px;
+        height: calc(100vh - 120px);
+    }
+    .fs-chat-fab {
+        right: 16px;
+        bottom: 16px;
+    }
+}
+</style>
+
+<!-- FAB Button -->
+<button class="fs-chat-fab" id="fsChatFab" aria-label="Abrir Financial Sniper">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l4.93-1.37C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm2.07-7.75l-.9.92C11.45 9.9 11 10.5 11 12H9v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H6c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+    </svg>
+</button>
+
+<!-- Chat Overlay -->
+<div class="fs-chat-overlay" id="fsChatOverlay">
+    <div class="fs-chat-header">
+        <div class="fs-chat-header-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            </svg>
+        </div>
+        <div class="fs-chat-header-info">
+            <h3>Financial Sniper</h3>
+            <p>Inteligência para compras</p>
+        </div>
+        <div class="fs-chat-header-dollar" id="fsDollarQuote">
+            Carregando...
+        </div>
+    </div>
+    
+    <div class="fs-chat-messages" id="fsChatMessages">
+        <div class="fs-chat-message bot">
+            <div class="fs-chat-message-bubble">
+                👋 Olá! Sou o <strong>Financial Sniper</strong>, seu assistente de compras inteligentes.
+
+Posso ajudar você com:
+• 💵 Cotação do dólar em tempo real
+• 📦 Cálculo de impostos de importação
+• 💳 Análise de parcelamento vs à vista
+• 🔍 Busca de preços de produtos
+
+Como posso ajudar?
+            </div>
+        </div>
+    </div>
+    
+    <div class="fs-chat-input-area">
+        <div class="fs-chat-input-wrapper">
+            <input type="text" class="fs-chat-input" id="fsChatInput" placeholder="Digite sua mensagem..." />
+            <button class="fs-chat-send" id="fsChatSend" aria-label="Enviar">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="fs-chat-quick-actions">
+            <button class="fs-chat-quick-btn" data-message="Qual a cotação do dólar?">💵 Dólar</button>
+            <button class="fs-chat-quick-btn" data-message="Calcular importação de US$ 100">📦 Importar</button>
+            <button class="fs-chat-quick-btn" data-message="Comparar à vista vs parcelado">💳 Pagamento</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const fab = document.getElementById('fsChatFab');
+    const overlay = document.getElementById('fsChatOverlay');
+    const messagesContainer = document.getElementById('fsChatMessages');
+    const input = document.getElementById('fsChatInput');
+    const sendBtn = document.getElementById('fsChatSend');
+    const dollarQuote = document.getElementById('fsDollarQuote');
+    const quickBtns = document.querySelectorAll('.fs-chat-quick-btn');
+    
+    let conversationHistory = [];
+    let isLoading = false;
+    
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [key, value] = cookie.trim().split('=');
+            if (key === name) return value;
+        }
+        return '';
+    }
+    
+    fab.addEventListener('click', function() {
+        fab.classList.toggle('active');
+        overlay.classList.toggle('open');
+        if (overlay.classList.contains('open')) {
+            input.focus();
+            fetchDollarQuote();
+        }
+    });
+    
+    async function fetchDollarQuote() {
+        try {
+            const response = await fetch('/api/chatbot/dollar/');
+            const data = await response.json();
+            dollarQuote.textContent = data.formatted;
+        } catch (e) {
+            dollarQuote.textContent = 'R$ 5,50';
+        }
+    }
+    
+    function addMessage(content, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `fs-chat-message ${isUser ? 'user' : 'bot'}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'fs-chat-message-bubble';
+        bubble.innerHTML = formatMessage(content);
+        
+        messageDiv.appendChild(bubble);
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    function formatMessage(text) {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+    }
+    
+    function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'fs-chat-message bot';
+        typingDiv.id = 'fsTypingIndicator';
+        typingDiv.innerHTML = `
+            <div class="fs-chat-typing">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    function hideTyping() {
+        const typing = document.getElementById('fsTypingIndicator');
+        if (typing) typing.remove();
+    }
+    
+    async function sendMessage(message) {
+        if (isLoading || !message.trim()) return;
+        
+        isLoading = true;
+        sendBtn.disabled = true;
+        
+        addMessage(message, true);
+        conversationHistory.push({ role: 'user', content: message });
+        
+        input.value = '';
+        showTyping();
+        
+        try {
+            const response = await fetch('/api/chatbot/message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    message: message,
+                    history: conversationHistory.slice(-10)
+                })
+            });
+            
+            const data = await response.json();
+            hideTyping();
+            
+            if (data.error) {
+                addMessage('Desculpe, ocorreu um erro. Tente novamente.');
+            } else {
+                addMessage(data.response);
+                conversationHistory.push({ role: 'assistant', content: data.response });
+            }
+        } catch (e) {
+            hideTyping();
+            addMessage('Erro de conexão. Verifique sua internet.');
+        }
+        
+        isLoading = false;
+        sendBtn.disabled = false;
+        input.focus();
+    }
+    
+    sendBtn.addEventListener('click', () => sendMessage(input.value));
+    
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage(input.value);
+        }
+    });
+    
+    quickBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            sendMessage(this.dataset.message);
+        });
+    });
+    
+    fetchDollarQuote();
+})();
+</script>

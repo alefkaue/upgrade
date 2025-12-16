@@ -1,0 +1,170 @@
+<div class="max-w-3xl space-y-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-lg font-bold mb-2">Gerador de Links de Afiliado</h2>
+        <p class="text-sm text-gray-500 mb-6">Cole um link normal de produto e o sistema inserira automaticamente sua tag de afiliado.</p>
+        
+        <form id="link-generator-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Link Original do Produto</label>
+                <input type="url" id="original-link" required
+                    class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="https://www.amazon.com.br/dp/B09V3KXJPB">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Loja</label>
+                <select id="store-select" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                    <option value="auto">Detectar automaticamente</option>
+                    <option value="amazon">Amazon</option>
+                    <option value="kabum">Kabum</option>
+                    <option value="terabyte">Terabyte</option>
+                    <option value="aliexpress">AliExpress</option>
+                    <option value="pichau">Pichau</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 font-medium">
+                Gerar Link com Minha Tag
+            </button>
+        </form>
+    </div>
+    
+    <div id="generated-result" class="hidden bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="font-semibold mb-4 flex items-center text-green-600">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Link Gerado com Sucesso!
+        </h3>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Seu Link de Afiliado</label>
+            <div class="flex">
+                <input type="text" id="generated-link" readonly
+                    class="flex-1 px-4 py-2 border border-gray-200 rounded-l-md text-sm bg-gray-50 font-mono">
+                <button onclick="copyGeneratedLink()" class="px-4 py-2 bg-black text-white rounded-r-md text-sm hover:bg-gray-800">
+                    Copiar
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between text-sm text-gray-500">
+            <span id="detected-store"></span>
+            <span id="tag-used"></span>
+        </div>
+    </div>
+    
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="font-semibold mb-2 text-blue-800">Suas Tags Configuradas</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Amazon:</span>
+                <span class="font-mono">{{ partner_profile.amazon_tag|default:"Nao configurado" }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Kabum:</span>
+                <span class="font-mono">{{ partner_profile.kabum_id|default:"Nao configurado" }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Terabyte:</span>
+                <span class="font-mono">{{ partner_profile.terabyte_code|default:"Nao configurado" }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">AliExpress:</span>
+                <span class="font-mono">{{ partner_profile.aliexpress_id|default:"Nao configurado" }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Pichau:</span>
+                <span class="font-mono">{{ partner_profile.pichau_id|default:"Nao configurado" }}</span>
+            </div>
+        </div>
+        <a href="?tab=sales" class="inline-block mt-4 text-blue-600 hover:underline text-sm">Editar tags</a>
+    </div>
+</div>
+
+<script>
+const PARTNER_TAGS = {
+    amazon: '{{ partner_profile.amazon_tag|default:"" }}',
+    kabum: '{{ partner_profile.kabum_id|default:"" }}',
+    terabyte: '{{ partner_profile.terabyte_code|default:"" }}',
+    aliexpress: '{{ partner_profile.aliexpress_id|default:"" }}',
+    pichau: '{{ partner_profile.pichau_id|default:"" }}'
+};
+
+document.getElementById('link-generator-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const originalLink = document.getElementById('original-link').value;
+    const storeSelect = document.getElementById('store-select').value;
+    
+    let store = storeSelect;
+    if (storeSelect === 'auto') {
+        store = detectStore(originalLink);
+    }
+    
+    if (!store) {
+        alert('Nao foi possivel detectar a loja. Selecione manualmente.');
+        return;
+    }
+    
+    const tag = PARTNER_TAGS[store];
+    if (!tag) {
+        alert('Voce nao configurou sua tag para ' + store + '. Configure em "Painel de Vendas".');
+        return;
+    }
+    
+    const generatedLink = generateAffiliateLink(originalLink, store, tag);
+    
+    document.getElementById('generated-link').value = generatedLink;
+    document.getElementById('detected-store').textContent = 'Loja: ' + store.charAt(0).toUpperCase() + store.slice(1);
+    document.getElementById('tag-used').textContent = 'Tag: ' + tag;
+    document.getElementById('generated-result').classList.remove('hidden');
+});
+
+function detectStore(url) {
+    if (url.includes('amazon.com')) return 'amazon';
+    if (url.includes('kabum.com')) return 'kabum';
+    if (url.includes('terabyte')) return 'terabyte';
+    if (url.includes('aliexpress')) return 'aliexpress';
+    if (url.includes('pichau')) return 'pichau';
+    return null;
+}
+
+function generateAffiliateLink(url, store, tag) {
+    try {
+        const urlObj = new URL(url);
+        
+        switch(store) {
+            case 'amazon':
+                urlObj.searchParams.set('tag', tag);
+                break;
+            case 'kabum':
+                urlObj.searchParams.set('gclid', tag);
+                break;
+            case 'terabyte':
+                urlObj.searchParams.set('aff', tag);
+                break;
+            case 'aliexpress':
+                urlObj.searchParams.set('aff_id', tag);
+                break;
+            case 'pichau':
+                urlObj.searchParams.set('ref', tag);
+                break;
+        }
+        
+        return urlObj.toString();
+    } catch(e) {
+        return url + (url.includes('?') ? '&' : '?') + 'tag=' + tag;
+    }
+}
+
+function copyGeneratedLink() {
+    const input = document.getElementById('generated-link');
+    input.select();
+    document.execCommand('copy');
+    const btn = input.nextElementSibling;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = originalText, 2000);
+}
+</script>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Projeto - UPGRADE{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto space-y-6">
+    <h1 class="text-2xl font-bold text-center">Excluir Projeto</h1>
+    
+    <div class="border border-red-200 rounded-lg p-6 bg-red-50">
+        <p class="text-center mb-4">
+            Tem certeza que deseja excluir o projeto <strong>{{ project.name }}</strong>?
+        </p>
+        <p class="text-sm text-gray-600 text-center mb-6">
+            Esta acao ira remover todos os {{ project.items.count }} itens do projeto e nao pode ser desfeita.
+        </p>
+        
+        <form method="post" class="flex space-x-4">
+            {% csrf_token %}
+            <a href="{% url 'project_detail' project.pk %}" class="flex-1 py-2 px-4 border border-gray-200 rounded-md hover:bg-gray-50 text-center bg-white">
+                Cancelar
+            </a>
+            <button type="submit" class="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Sim, Excluir
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

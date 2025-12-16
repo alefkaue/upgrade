@@ -1,0 +1,73 @@
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <p class="text-sm text-gray-500">{{ total_projects }} projeto{% if total_projects != 1 %}s{% endif %} ativo{% if total_projects != 1 %}s{% endif %}</p>
+        </div>
+        <a href="{% url 'project_create' %}" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+            + Novo Projeto
+        </a>
+    </div>
+
+    {% if projects %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for project in projects %}
+                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold">{{ project.name }}</h3>
+                        <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">{{ project.get_project_type_display }}</span>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm text-gray-600 mb-4">
+                        <div class="flex justify-between">
+                            <span>Itens:</span>
+                            <span class="font-medium text-black">{{ project.items.count }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total a Vista:</span>
+                            <span class="font-medium text-green-600">R$ {{ project.total_cash_price|floatformat:2 }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total Parcelado:</span>
+                            <span class="font-medium text-black">R$ {{ project.total_installment_price|floatformat:2 }}</span>
+                        </div>
+                        <div class="flex justify-between border-t pt-2">
+                            <span class="font-medium">Parcela Mensal:</span>
+                            <span class="font-bold {% if project.total_monthly_installment > financial_summary.available_cash %}text-red-600{% else %}text-black{% endif %}">
+                                R$ {{ project.total_monthly_installment|floatformat:2 }}
+                            </span>
+                        </div>
+                        {% if project.savings_if_cash > 0 %}
+                        <div class="flex justify-between text-green-600">
+                            <span>Economia a Vista:</span>
+                            <span class="font-medium">R$ {{ project.savings_if_cash|floatformat:2 }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if project.total_monthly_installment > financial_summary.available_cash and financial_summary.available_cash >= 0 %}
+                        <div class="p-2 bg-yellow-100 text-yellow-800 rounded-md text-xs mb-3 border border-yellow-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            Excede seu fluxo livre atual
+                        </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'project_detail' project.pk %}" class="block text-center py-2 border border-gray-200 rounded-md hover:bg-gray-50">
+                        Ver Detalhes
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12 bg-white border border-gray-200 rounded-lg">
+            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            <p class="text-gray-500 mb-4">Voce ainda nao tem projetos.</p>
+            <a href="{% url 'project_create' %}" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+                Criar Primeiro Projeto
+            </a>
+        </div>
+    {% endif %}
+</div>

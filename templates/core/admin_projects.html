@@ -1,0 +1,70 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Gestao Global - Admin{% endblock %}
+{% block page_title %}Gestao Global de Projetos{% endblock %}
+{% block page_subtitle %}{{ projects.count }} projetos no sistema{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white border border-gray-200 rounded-lg">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Lista de Projetos</h2>
+                <div class="text-sm text-gray-500">
+                    Total: {{ projects.count }} projetos
+                </div>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Projeto</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Usuario</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Tipo</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Itens</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Valor Total</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Parcela Mensal</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Criado em</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Acoes</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for project in projects %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-4 px-6">
+                                <div>
+                                    <p class="font-medium">{{ project.name }}</p>
+                                    {% if project.description %}
+                                        <p class="text-xs text-gray-500">{{ project.description|truncatechars:40 }}</p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-gray-600">{{ project.user.username }}</td>
+                            <td class="py-4 px-6">
+                                <span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-700">{{ project.get_project_type_display }}</span>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-gray-600">{{ project.items.count }}</td>
+                            <td class="py-4 px-6 text-sm font-medium">R$ {{ project.total_cash_price|floatformat:2 }}</td>
+                            <td class="py-4 px-6 text-sm">
+                                <span class="{% if project.is_over_budget %}text-red-600 font-medium{% else %}text-gray-600{% endif %}">
+                                    R$ {{ project.total_monthly_installment|floatformat:2 }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-gray-500">{{ project.created_at|date:"d/m/Y" }}</td>
+                            <td class="py-4 px-6">
+                                <a href="{% url 'project_detail' pk=project.pk %}" class="text-sm text-blue-600 hover:text-blue-800">Ver</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="py-8 text-center text-gray-500">Nenhum projeto encontrado.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

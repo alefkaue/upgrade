@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.name }} - UPGRADE{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-black text-sm">&larr; Voltar</a>
+            <h1 class="text-2xl font-bold mt-2">{{ project.name }}</h1>
+        </div>
+        <div class="flex space-x-2">
+            <a href="{% url 'project_edit' project.pk %}" class="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50">
+                Editar
+            </a>
+            <a href="{% url 'project_delete' project.pk %}" class="px-4 py-2 border border-red-200 text-red-600 rounded-md hover:bg-red-50">
+                Excluir
+            </a>
+        </div>
+    </div>
+
+    {% if project.is_over_budget %}
+        <div class="p-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+            <strong>Alerta Financeiro:</strong> A soma das parcelas mensais (R$ {{ project.total_monthly_installment|floatformat:2 }}) 
+            excede o seu orcamento de R$ {{ project.budget|floatformat:2 }}. Considere revisar seus itens.
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-6 border border-gray-200 rounded-lg">
+            <p class="text-gray-600 text-sm flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                Total do Projeto
+            </p>
+            <p class="text-2xl font-bold">R$ {{ project.total_installment_price|floatformat:2 }}</p>
+            <p class="text-xs text-gray-500">{{ project.items.count }} itens</p>
+        </div>
+        <div class="p-6 border border-gray-200 rounded-lg">
+            <p class="text-gray-600 text-sm flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                Fluxo Mensal (Parcelas)
+            </p>
+            <p class="text-2xl font-bold">R$ {{ project.total_monthly_installment|floatformat:2 }}</p>
+            <p class="text-xs text-gray-500">Soma das parcelas</p>
+        </div>
+        <div class="p-6 border border-gray-200 rounded-lg">
+            <p class="text-gray-600 text-sm flex items-center">
+                <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Meta Pix (A Vista)
+            </p>
+            <p class="text-2xl font-bold text-green-600">R$ {{ project.total_cash_price|floatformat:2 }}</p>
+            {% if project.savings_if_cash > 0 %}
+                <p class="text-xs text-green-600">Economia de R$ {{ project.savings_if_cash|floatformat:2 }}</p>
+            {% endif %}
+        </div>
+        <div class="p-6 border border-gray-200 rounded-lg {% if project.is_over_budget %}border-red-300 bg-red-50{% endif %}">
+            <p class="text-gray-600 text-sm">Orcamento Mensal</p>
+            <p class="text-2xl font-bold {% if project.is_over_budget %}text-red-600{% endif %}">R$ {{ project.budget|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <div class="border border-gray-200 rounded-lg">
+        <div class="flex justify-between items-center p-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                Itens do Projeto
+            </h2>
+            <a href="{% url 'item_create' project.pk %}" class="px-4 py-2 bg-black text-white rounded-md text-sm hover:bg-gray-800 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Smart Add
+            </a>
+        </div>
+
+        {% if project.items.all %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-medium text-sm text-gray-600">ITEM</th>
+                            <th class="text-left py-3 px-4 font-medium text-sm text-gray-600">LOJA</th>
+                            <th class="text-right py-3 px-4 font-medium text-sm text-gray-600">PRECO PARCELADO</th>
+                            <th class="text-right py-3 px-4 font-medium text-sm text-gray-600">PRECO PIX</th>
+                            <th class="text-center py-3 px-4 font-medium text-sm text-gray-600">ACOES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in project.items.all %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-3 px-4">
+                                    <div>
+                                        <p class="font-medium">{{ item.name }}</p>
+                                        <p class="text-xs text-gray-500">{{ item.category }}</p>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4 text-sm">{{ item.store }}</td>
+                                <td class="py-3 px-4 text-right">R$ {{ item.installment_price|floatformat:2 }}</td>
+                                <td class="py-3 px-4 text-right text-green-600 font-medium">R$ {{ item.cash_price|floatformat:2 }}</td>
+                                <td class="py-3 px-4 text-center">
+                                    <div class="flex justify-center space-x-2">
+                                        <a href="{% url 'item_edit' item.pk %}" class="text-gray-400 hover:text-black">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                            </svg>
+                                        </a>
+                                        {% if item.link %}
+                                        <a href="{{ item.link }}" target="_blank" class="text-gray-400 hover:text-black">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'item_delete' item.pk %}" class="text-gray-400 hover:text-red-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-8 text-center text-gray-500">
+                <p class="mb-4">Nenhum item adicionado ainda.</p>
+                <a href="{% url 'item_create' project.pk %}" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+                    Adicionar Primeiro Item
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

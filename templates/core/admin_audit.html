@@ -1,0 +1,67 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Auditoria - Admin{% endblock %}
+{% block page_title %}Logs de Auditoria{% endblock %}
+{% block page_subtitle %}{{ logs.count }} registros{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white border border-gray-200 rounded-lg">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    Registro de Atividades
+                </h2>
+                <div class="text-sm text-gray-500">
+                    Total: {{ logs.count }} registros
+                </div>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Data/Hora</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Usuario</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Acao</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Modelo</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">Objeto</th>
+                        <th class="text-left py-3 px-6 text-sm font-medium text-gray-600">IP</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for log in logs %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-4 px-6 text-sm text-gray-600">{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
+                            <td class="py-4 px-6">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-medium text-sm">{{ log.user.username|default:"-" }}</span>
+                                    {% if log.admin_id %}
+                                        <span class="text-xs text-gray-400">({{ log.admin_id }})</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="px-2 py-1 text-xs rounded {% if log.action == 'login' %}bg-green-100 text-green-700{% elif log.action == 'logout' %}bg-gray-100 text-gray-700{% elif log.action == 'create' %}bg-blue-100 text-blue-700{% elif log.action == 'update' %}bg-yellow-100 text-yellow-700{% elif log.action == 'delete' %}bg-red-100 text-red-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                                    {{ log.get_action_display }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-gray-600">{{ log.model_name|default:"-" }}</td>
+                            <td class="py-4 px-6 text-sm text-gray-600">{{ log.object_repr|default:"-"|truncatechars:30 }}</td>
+                            <td class="py-4 px-6 text-sm text-gray-400 font-mono">{{ log.ip_address|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="py-8 text-center text-gray-500">Nenhum log de auditoria encontrado.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
